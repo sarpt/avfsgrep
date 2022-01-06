@@ -5,17 +5,25 @@ Crude and quick implementation of tool to run `grep` recursively through `avfs` 
 Might later change use of `avfs` to some other virtual fses that support archives handling, not needed atm.
 
 ### execution example
+
 First mount `avfs`:
+
 ```mountavfs```
 
 Run or compile:
+
 ```deno run --allow-env --allow-read --allow-run main.ts </path/to/dir or /path/to/archive> -r <grep regex> [-- <grep options>]```
+
 or
+
 ```deno compile --allow-env --allow-read --allow-run main.ts```
+
 and then run
+
 ```deno run avfsgrep </path/to/dir or /path/to/archive> -r <grep regex> [-- <grep options>]```
 
 Lastly, when not needed unmount `avfs`:
+
 ```umount ~/.avfs```
 
 ### dependencies for running
