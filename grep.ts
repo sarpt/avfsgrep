@@ -37,12 +37,12 @@ export async function grepFiles(
     if (lines.length === 0) continue;
 
     const results: result[] = lines.map(line => {
-      const [lineNumber, match] = line.split(':');
+      const [lineNumber, ...match] = line.split(':');
       
       return {
         path: filePath,
         line: Number.parseInt(lineNumber),
-        match,
+        match: match.join(':'),
       }
     });
     matches.push(...results);
