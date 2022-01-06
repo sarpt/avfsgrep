@@ -20,7 +20,7 @@ or
 
 and then run
 
-```deno run avfsgrep </path/to/dir or /path/to/archive> -r <grep regex> [-- <grep options>]```
+```avfsgrep </path/to/dir or /path/to/archive> -r <grep regex> [-- <grep options>]```
 
 Lastly, when not needed unmount `avfs`:
 
