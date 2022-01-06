@@ -20,7 +20,7 @@ Lastly, when not needed unmount `avfs`:
 
 ### dependencies for running
 
-- `deno` - tested on 1.8 and up
+- `deno` - tested on 1.17.1 and up
 - `avfs` - a virtual file system which has support for mounting archives contents as files (http://avf.sourceforge.net/)
 - `grep` - just a grep
 
@@ -28,13 +28,13 @@ Lastly, when not needed unmount `avfs`:
 
 - `allow-env` - for reading home directory path
 - `allow-read` - for reading directories and files
-- `allow-run` - for executing `grep` 
+- `allow-run` - for executing `grep`
 
 ### arguments
 
 - `-i, --i` : input file (not needed when unnamed argument before `--` provided)
 - `-r, --r` : regex for `grep`
-- `--pr` : (list) path regexes 
+- `--pr` : (list) path regexes
 - `--fr` : (list) filename regexes
 - `-v` : verbose logging
 - `--er` : (list) extension regexes
