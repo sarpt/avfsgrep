@@ -16,7 +16,7 @@ Run or compile:
 
 or
 
-```deno compile --allow-env --allow-read --allow-run main.ts```
+```deno install --allow-env --allow-read --allow-run main.ts```
 
 and then run
 
