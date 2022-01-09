@@ -34,9 +34,7 @@ export class Avfs {
     return path.slice(0, path.length-1);
   }
 
-  private static async IsReadableFile(err: unknown, path: string): Promise<boolean> {
-    if (!(err instanceof Deno.errors.NotFound)) return false;
-
+  private static async FileExists(path: string): Promise<boolean> {
     let info;
     try {
       info = await Deno.stat(path);
@@ -56,29 +54,38 @@ export class Avfs {
     for await(const e of walk(path)) {
       if (!e.isFile) continue;
 
-      let info: Deno.FileInfo;
-      const contentsPath = Avfs.PathToAvfsContentsOfFile(e.path);
-      try {
-        info = await Deno.stat(contentsPath);
-      } catch(err) {
-        if (!Avfs.IsReadableFile(err, e.path)) {
-          console.error(`couldn't stat path '${contentsPath}': ${err}`);
+      const enterableArchive = await Avfs.isEnterableArchive(e.path);
+      if (!enterableArchive) {
+        if (!Avfs.FileExists(e.path)) {
+          console.error(`entry at path '${e.path}' is neither a supported archive or a greppable file`);
           continue;
         }
 
-        if (Avfs.ShouldSkipFile(e.path, regexes)) continue;
-
-        files.push(Avfs.RegularFileAvfsPath(contentsPath));
+        Avfs.handleFile(e.path, files, regexes);
         continue;
       }
 
-      if (!info.isDirectory) continue;
-
-      const filesInPath = await this.findFilesRecursiveInAvfs(contentsPath, regexes);
+      const filesInPath = await this.findFilesRecursiveInAvfs(Avfs.PathToAvfsContentsOfFile(e.path), regexes);
       files.push(...filesInPath);
     }
 
     return files;
+  }
+
+  private static handleFile(path: string, files: string[], regexes?: regexes) {
+    if (Avfs.ShouldSkipFile(path, regexes)) return;
+
+    files.push(path);
+  }
+
+  private static async isEnterableArchive(path: string): Promise<boolean> {
+      const contentsPath = Avfs.PathToAvfsContentsOfFile(path);
+      try {
+        const info = await Deno.stat(contentsPath);
+        return info.isDirectory;
+      } catch {
+        return false;
+      }
   }
 
   private static ShouldSkipFile(path: string, regexes?: regexes): boolean {
