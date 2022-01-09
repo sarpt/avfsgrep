@@ -12,7 +12,7 @@ First mount `avfs`:
 
 Run or compile:
 
-```deno run --allow-env --allow-read --allow-run main.ts </path/to/dir or /path/to/archive> -r <grep regex> [-- <grep options>]```
+```deno run --unstable --allow-ffi --allow-env --allow-read --allow-run main.ts </path/to/dir or /path/to/archive> -r <grep regex> [-- <grep options>]```
 
 or
 
@@ -28,12 +28,17 @@ Lastly, when not needed unmount `avfs`:
 
 ### dependencies for running
 
+Currently only linux is supported (due to dependence on `libmagic` being present in default `ldconfig` aliases path for file format deduction using FFI). Probably will add some switch or something for extension-based deduction or other method...
+
 - `deno` - tested on 1.17.1 and up
 - `avfs` - a virtual file system which has support for mounting archives contents as files (http://avf.sourceforge.net/)
 - `grep` - just a grep
+- `xzgrep`/`lzgrep` - for xz/lzma archives
+- `libmagic` - for files format deduction
 
 ### permissions
 
+- `unstable` & `allow-ffi` - for FFI (format deduction using `libmagic`)
 - `allow-env` - for reading home directory path
 - `allow-read` - for reading directories and files
 - `allow-run` - for executing `grep`

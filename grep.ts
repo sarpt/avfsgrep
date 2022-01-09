@@ -1,9 +1,40 @@
+import { LibMagic } from "./libmagic.ts";
 
 export type result = {
   path: string,
   line: number,
   match: string,
 };
+
+const regularGrep = 'grep';
+const grepVariants = [
+  {
+    cmd: 'xzgrep',
+    predicate: (filePath: string, libmagic: LibMagic) => {
+      const { errMsg, result } = libmagic.file(filePath);
+      if (errMsg) {
+        return false;
+      }
+
+      return result === 'application/x-xz';
+    }
+  },
+  {
+    cmd: 'lzgrep',
+    predicate: (filePath: string, libmagic: LibMagic) => {
+      const { errMsg, result } = libmagic.file(filePath);
+      if (errMsg) {
+        return false;
+      }
+
+      return result === 'application/x-lzma';
+    }
+  },
+  {
+    cmd: regularGrep,
+    predicate: () => true
+  }
+];
 
 export async function grepFiles(
   files: string[],
@@ -17,9 +48,17 @@ export async function grepFiles(
 ): Promise<result[]> {
   const matches: result[] = [];
 
+  const libmagic = new LibMagic();
+  const { errMsg } = libmagic.open();
+  if (errMsg) {
+    console.error(`could not open libmagic for format deduction: ${errMsg}`);
+    return matches;
+  }
+
   for (const filePath of files) {
+    const grep = grepVariants.find(variant => variant.predicate(filePath, libmagic))?.cmd || regularGrep;
     const cmd = [
-      'grep',
+      grep,
       ...options,
       '-n',
       regex,
@@ -47,6 +86,8 @@ export async function grepFiles(
     });
     matches.push(...results);
   }
+
+  libmagic.close();
 
   return matches;
 }
