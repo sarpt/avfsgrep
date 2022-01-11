@@ -1,4 +1,4 @@
-import { LibMagic } from "./libmagic.ts";
+export type isMimeTypeCb = (mime: string, filepath: string) => boolean;
 
 export type result = {
   path: string,
@@ -10,24 +10,14 @@ const regularGrep = 'grep';
 const grepVariants = [
   {
     cmd: 'xzgrep',
-    predicate: (filePath: string, libmagic: LibMagic) => {
-      const { errMsg, result } = libmagic.file(filePath);
-      if (errMsg) {
-        return false;
-      }
-
-      return result === 'application/x-xz';
+    predicate: (filePath: string, isMimeType: isMimeTypeCb) => {
+      return isMimeType('application/x-xz', filePath);
     }
   },
   {
     cmd: 'lzgrep',
-    predicate: (filePath: string, libmagic: LibMagic) => {
-      const { errMsg, result } = libmagic.file(filePath);
-      if (errMsg) {
-        return false;
-      }
-
-      return result === 'application/x-lzma';
+    predicate: (filePath: string, isMimeType: isMimeTypeCb) => {
+      return isMimeType('application/x-lzma', filePath);
     }
   },
   {
@@ -40,23 +30,18 @@ export async function grepFiles(
   files: string[],
   {
     options,
-    regex
+    regex,
+    isMimeType,
   }: {
     options: string[],
     regex: string,
+    isMimeType: isMimeTypeCb,
   }
 ): Promise<result[]> {
   const matches: result[] = [];
 
-  const libmagic = new LibMagic();
-  const { errMsg } = libmagic.open();
-  if (errMsg) {
-    console.error(`could not open libmagic for format deduction: ${errMsg}`);
-    return matches;
-  }
-
   for (const filePath of files) {
-    const grep = grepVariants.find(variant => variant.predicate(filePath, libmagic))?.cmd || regularGrep;
+    const grep = grepVariants.find(variant => variant.predicate(filePath, isMimeType))?.cmd || regularGrep;
     const cmd = [
       grep,
       ...options,
@@ -86,8 +71,6 @@ export async function grepFiles(
     });
     matches.push(...results);
   }
-
-  libmagic.close();
 
   return matches;
 }
