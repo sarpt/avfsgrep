@@ -10,13 +10,15 @@ First mount `avfs`:
 
 ```mountavfs```
 
-Run or compile:
+Run...
 
 ```deno run --unstable --allow-ffi --allow-env --allow-read --allow-run main.ts </path/to/dir or /path/to/archive> -r <grep regex> [-- <grep options>]```
 
-or
+... or install/compile:
 
-```deno install --allow-env --allow-read --allow-run main.ts```
+- ```deno install --unstable --allow-ffi --allow-env --allow-read --allow-run main.ts```
+
+- ```deno compile --unstable --allow-ffi --allow-env --allow-read --allow-run main.ts```
 
 and then run
 
@@ -45,7 +47,7 @@ Currently only linux is supported (due to dependence on `libmagic` being present
 
 ### arguments
 
-- `-i, --i` : input file (not needed when unnamed argument before `--` provided)
+- `-i, --i` : input file (ignored when unnamed arguments before `--` provided)
 - `-r, --r` : regex for `grep`
 - `--pr` : (list) path regexes
 - `--fr` : (list) filename regexes
@@ -54,5 +56,5 @@ Currently only linux is supported (due to dependence on `libmagic` being present
 
 ### unnamed arguments
 
-- before `--` - argument (one) is treated as root path to directory/archive to be checked recursively.
+- before `--` - arguments (multiple) are treated as root path to directory/archive to be checked recursively.
 - after `--` - arguments (multiple) are passed to `grep` as is.
