@@ -2,7 +2,7 @@
 
 Crude and quick implementation of tool to run `grep` recursively through `avfs` to descent into archive files when needed.
 
-Might later change use of `avfs` to some other virtual fses that support archives handling, not needed atm.
+A variant not dependent on the avfs can be found here: https://github.com/sarpt/argrep
 
 ### execution example
 
